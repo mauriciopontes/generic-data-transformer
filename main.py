@@ -1,7 +1,7 @@
 import pandas as pd
 import json
 
-def processar_boletim_com_exclusividade(caminho_input: str, caminho_config: str):
+def processar_dados(caminho_input: str, caminho_config: str):
     # 1. Carga
     with open(caminho_config, 'r', encoding='utf-8') as f:
         config = json.load(f)
@@ -60,7 +60,7 @@ def processar_boletim_com_exclusividade(caminho_input: str, caminho_config: str)
 
 if __name__ == "__main__":
     try:
-        df_final = processar_boletim_com_exclusividade(r"spreadsheets\raw_data\raw_data.xlsx", "config.json")
+        df_final = processar_dados(r"spreadsheets\raw_data\raw_data.xlsx", "config.json")
         df_final.to_excel(r"spreadsheets\clean_structured_data\clean_structured_data.xlsx", index=False)
         print("Processamento Concluído com Sucesso.")
     except Exception as e:
