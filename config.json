@@ -1,0 +1,44 @@
+{
+    "colunas_ancora": [
+        "Ativo", 
+        "Ticker", 
+        "Instrumento", 
+        "Indexador", 
+        "Juros", 
+        "Primeira Data de Juros", 
+        "Amortização", 
+        "Primeira Data de Amortização", 
+        "Isento", 
+        "Rating", 
+        "Risco", 
+        "Vencimento", 
+        "ROA E. Aprox.", 
+        "Público"
+    ],
+    "mapeamento_segmentos": {
+        "Geral": [
+            "Tax.Máx", 
+            "GrossUp Tax.Máx"
+        ],
+        "Digital": [
+            "Tax.Máx - Digital", 
+            "GrossUp Tax.Máx - Digital"
+        ],
+        "Exclusive": [
+            "Tax.Máx - Exclusive", 
+            "GrossUp Tax.Máx - Exclusive"
+        ],
+        "Signature": [
+            "Tax.Máx - Signature", 
+            "GrossUp Tax.Máx - Signature"
+        ],
+        "Unique": [
+            "Tax.Máx - Unique", 
+            "GrossUp Tax.Máx - Unique"
+        ],
+        "Private": [
+            "Tax.Máx - Private", 
+            "GrossUp Tax.Máx - Private"
+        ]
+    }
+}
