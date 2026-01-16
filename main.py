@@ -49,7 +49,7 @@ if __name__ == "__main__":
         
         # 3. Exportação
         df_final.to_csv("dados_transformados_final.csv", index=False)
-        print("✔ Processamento concluído via configuração JSON.")
+        print("Processamento concluído.")
         
     except Exception as e:
-        print(f"✖ Falha na execução: {e}")
+        print(f"Falha na execução: {e}")
