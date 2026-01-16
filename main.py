@@ -1,29 +1,29 @@
 import pandas as pd
 import json
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Dict, Any
 
-def carregar_configuracao(caminho_config: str) -> Dict[str, Any]:
-    """Carrega as definições de colunas e mapeamentos de um arquivo JSON."""
-    path = Path(caminho_config)
-    if not path.exists():
-        raise FileNotFoundError(f"Configuração não encontrada em: {path}")
+def processar_dados(caminho_excel: str, caminho_config: str):
+    """
+    Lê um arquivo Excel e o transforma conforme as regras do JSON.
+    """
+
+    with open(caminho_config, 'r', encoding='utf-8') as f:
+        config = json.load(f)
     
-    with open(path, 'r', encoding='utf-8') as f:
-        return json.load(f)
-
-def transformar_dados(caminho_entrada: str, config: Dict[str, Any]) -> pd.DataFrame:
-    """Transforma os dados baseando-se no dicionário de configuração."""
-    df_origem = pd.read_csv(caminho_entrada)
     colunas_ancora = config['colunas_ancora']
     mapeamento = config['mapeamento_segmentos']
-    
+
+    # 2. Ler Excel (Sem se preocupar com encoding ou separadores)
+    df_origem = pd.read_excel(caminho_excel, engine='openpyxl')
+
     lista_final = []
 
+    # 3. Transformação (Unpivoting)
     for _, linha in df_origem.iterrows():
         for segmento, colunas in mapeamento.items():
-            # Construção da linha usando dictionary comprehension
-            nova_entrada = {col: linha[col] for col in colunas_ancora}
+            # Criar dicionário da nova linha
+            nova_entrada = {col: linha.get(col) for col in colunas_ancora}
             
             nova_entrada['Segmento'] = segmento
             nova_entrada['Taxa'] = linha.get(colunas[0])
@@ -31,25 +31,28 @@ def transformar_dados(caminho_entrada: str, config: Dict[str, Any]) -> pd.DataFr
             
             lista_final.append(nova_entrada)
 
-    df_res = pd.DataFrame(lista_final)
+    # 4. Criar DataFrame Resultante
+    df_resultante = pd.DataFrame(lista_final)
+
+    # Reorganizar colunas (Segmento e Taxas primeiro)
+    colunas_finais = ['Ativo', 'Segmento', 'Taxa', 'GrossUp'] + \
+                     [c for c in colunas_ancora if c != 'Ativo']
     
-    # Organização das colunas para o output
-    ordem = ['Ativo', 'Segmento', 'Taxa', 'GrossUp'] + [c for c in colunas_ancora if c != 'Ativo']
-    return df_res[ordem]
+    return df_resultante[colunas_finais]
 
 if __name__ == "__main__":
     try:
-        # 1. Setup de caminhos
-        ARQUIVO_INPUT = "Estruturação de Dados - Boletim.xlsx - Estrestrutura Atual .csv"
-        ARQUIVO_CONFIG = "config.json"
+        # Caminhos dos arquivos
+        INPUT = r"spreadsheets\raw_data\raw_data.xlsx"
+        CONFIG = "config.json"
+        OUTPUT = r"spreadsheets\clean_structured_data\clean_structured_data.xlsx"
+
+        df_final = processar_dados(INPUT, CONFIG)
+
+        # 5. Salvar o resultado de volta para Excel
+        df_final.to_excel(OUTPUT, index=False, engine='openpyxl')
         
-        # 2. Execução
-        config = carregar_configuracao(ARQUIVO_CONFIG)
-        df_final = transformar_dados(ARQUIVO_INPUT, config)
-        
-        # 3. Exportação
-        df_final.to_csv("dados_transformados_final.csv", index=False)
-        print("Processamento concluído.")
-        
+        print(f"Processamento concluído.")
+
     except Exception as e:
-        print(f"Falha na execução: {e}")
+        print(f"Erro: {e}")
